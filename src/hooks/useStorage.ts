@@ -1,0 +1,9 @@
+import {useState,useCallback} from 'react';
+import type {AppData} from '../types';
+import {createSeed} from '../data/seed';
+import {validateCargo,validateVehicle} from '../services/packing';
+export const STORAGE_KEY='logistics-load-planner-v1';
+export function validateData(value:unknown):value is AppData{const d=value as AppData;return !!d&&Array.isArray(d.cargo)&&d.cargo.every(c=>typeof c.id==='string'&&typeof c.name==='string'&&typeof c.notes==='string'&&typeof c.requestId==='string'&&typeof c.origin==='string'&&typeof c.destination==='string'&&typeof c.date==='string'&&!validateCargo(c).length)&&Array.isArray(d.vehicles)&&d.vehicles.length>0&&d.vehicles.every(v=>typeof v.id==='string'&&typeof v.name==='string'&&!validateVehicle(v).length)&&Array.isArray(d.tariffs)&&Array.isArray(d.history)&&Array.isArray(d.selected)&&!!d.settings&&Array.isArray(d.settings.nearbyRoutes)&&Number.isFinite(d.settings.distance)&&d.settings.distance>=0;}
+export function useStorage(){const [initial]=useState(()=>{try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const data=JSON.parse(raw);if(validateData(data))return {data,error:''};return {data:createSeed(),error:'Сохранённые данные повреждены. Они не перезаписаны. Экспортируйте резервную копию из настроек перед изменениями.'};}return {data:createSeed(),error:''};}catch{return {data:createSeed(),error:'Хранилище недоступно или данные повреждены. Изменения могут не сохраниться.'};}});const [data,setData]=useState(initial.data);const [storageError,setError]=useState(initial.error);
+ const update=useCallback((fn:(current:AppData)=>AppData)=>setData(current=>{const next=fn(current);try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));}catch{setError('Не удалось сохранить данные. Возможно, хранилище заполнено. Скачайте резервную копию в настройках.');}return next;}),[]);
+ return {data,update,storageError};}

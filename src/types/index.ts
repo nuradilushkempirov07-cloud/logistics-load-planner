@@ -1,0 +1,11 @@
+export interface CargoItem { id:string; name:string; requestId:string; customer:string; origin:string; destination:string; date:string; quantity:number; length:number; width:number; height:number; weight:number; stackable:boolean; maxLayers:number; rotatable:boolean; tiltable:boolean; fragile:boolean; upright:boolean; notes:string }
+export interface Vehicle { id:string; name:string; description:string; length:number; width:number; height:number; capacity:number; maxFloorLoad:number; tripCost:number; perKm:number; minimum:number }
+export interface TransportRequest { id:string; origin:string; destination:string; date:string; cargo:CargoItem[] }
+export interface Tariff { id:string; carrier:string; origin:string; destination:string; vehicleId:string; fixed:number; perKm:number; minimum:number; validFrom:string }
+export interface LoadingPosition { id:string; cargoId:string; x:number; y:number; length:number; width:number; height:number; layers:number; first:number; weight:number; tilted:boolean }
+export interface LoadingResult { positions:LoadingPosition[]; unplaced:number; reasons:string[]; fits:boolean; volume:number; weight:number; floor:number; rawFloor:number; effectiveFloor:number; count:number; volumePercent:number; weightPercent:number; floorPercent:number; utilization:number; status:string; tone:string }
+export interface LoadingCalculation { id:string; date:string; cargo:CargoItem[]; vehicle:Vehicle; result:LoadingResult; cost:number; savings:number; baseline:number; distance:number; demo?:boolean }
+export interface ConsolidationOption { id:string; requests:string[]; cargo:CargoItem[]; vehicle:Vehicle; result:LoadingResult; cost:number; separate:number; savings:number; savingsPercent:number; distance:number; route:string }
+export interface KPI { averageLoad:number; underloaded:number; optimal:number; cost:number; savings:number; baseline:number; weight:number; volume:number; requestsPerVehicle:number }
+export interface Settings { company:string; dateTolerance:number; maxDeviation:number; distance:number; nearbyRoutes:{from:string; to:string; extraKm:number}[] }
+export interface AppData { cargo:CargoItem[]; vehicles:Vehicle[]; tariffs:Tariff[]; history:LoadingCalculation[]; settings:Settings; selected:string[]; vehicleId:string; manual:LoadingPosition[]|null }
